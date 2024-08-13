@@ -2,17 +2,24 @@ import { useRef, useState } from "react";
 
 function App() {
   const [matterId, setMatterId] = useState<number>();
-  const ref = useRef<HTMLInputElement | null>(null);
+  const [token, setToken] = useState<string>();
+  const matterIdRef = useRef<HTMLInputElement | null>(null);
+  const tokenRef = useRef<HTMLTextAreaElement | null>(null);
 
   const onClick = () => {
-    if (!ref?.current?.value) {
+    if (!matterIdRef?.current?.value) {
       setMatterId(undefined);
       return;
     }
 
-    const id = +ref.current?.value;
-    console.log();
+    if (!tokenRef?.current?.value) {
+      setToken(undefined);
+      return;
+    }
+
+    const id = +matterIdRef.current?.value;
     setMatterId(isNaN(id) ? undefined : id);
+    setToken(tokenRef.current.value);
   };
 
   return (
@@ -33,15 +40,28 @@ function App() {
         }}
       >
         <label htmlFor="matter-id">Matter Id</label>
-        <input type="number" id='matter-id' ref={ref} />
-        <button onClick={onClick}>
-          Update Matter Id
-        </button>
+        <input type="number" id='matter-id' ref={matterIdRef} />
+        
       </div>
-      {matterId ? (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "10px",
+        }}
+      >
+        <label htmlFor="token">Token</label>
+        <textarea ref={tokenRef} id="token" style={{
+          width: '100%'
+        }} rows={5} />
+      </div>
+      <button onClick={onClick}>
+          Update
+        </button>
+      {matterId && token ? (
         <iframe
           key={matterId}
-          src={`https://dev.pythia.legal/wl/matter/${matterId}/forms`}
+          src={`https://dev.pythia.legal/wl/matter/${matterId}/forms?token=${token}`}
           style={{
             width: "100%",
             height: "100%",
